@@ -11,6 +11,7 @@
 
 class DP {
 private:
+    int count;
     string trasa;
     int wynik;
     Graf graf;
@@ -19,12 +20,14 @@ private:
     int DPuj(int size,int start, bool maska[]);
     bool *odwiedzone;
     int FindMin(tablicaI data, int start);
-
+    tablica tr;
+    tablica tempTr;
+    void reconstructRoute();
+    string wskazSciezke(string droga);
 public:
     DP(string nazwa, int start);
     int getWynik();
     string getTrasa();
-    void x();
 };
 
 
