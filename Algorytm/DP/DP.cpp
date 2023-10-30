@@ -66,46 +66,47 @@ void DP::reconstructRoute() {
     droga += to_string(start);
 
     int how = start;
-    int n = 1;
+    int n = tempTr.rozmiar-1;
+    int save = n;
 
     for(int i=0;i<how-2;i++){
         int m = start;
         next = stop;
         if(m == 3) {
             for (int k = 0; k < 3; k++) {
-                n++;
                 if (k == next) {
                     droga += tempTr.table[n];
                     break;
                 }
-
+                n--;
             }
             break;
         }
         while(true){
-            for(int j=1;j<=m;j++){
+            for(int j=1;true;j++){
+                if(tempTr.table[n][1] - 48 == start-1){
+                    te+=tempTr.table[n];
+                    n--;
+                    break;
+                }
                 te+=tempTr.table[n];
-                n++;
+                n--;
             }
             if(temp==next) {
-                cout<<n<<" n"<<endl;
-                n -= start;
-                cout<<n<<" n"<<endl;
-                cout<<te<<" te"<<endl;
+                n = save;
                 break;
             }
             temp++;
-            cout<<te<<" te"<<endl;
-            cout<<n<<" n"<<endl;
             te = "";
         }
-        start = te[1]-48;
-        stop = te[0] - 48;
-        droga+=std::to_string(te[0] -48);
-        droga+=std::to_string(te[1] -48);
+        start = te[te.length()-1]-48;
+        stop = te[te.length()-2] - 48;
+        save = n;
+        droga+=std::to_string(te[te.length()-2] - 48);
+        droga+=std::to_string(te[te.length()-1]-48);
         temp = 0;
     }
-    cout<<droga<<" XXDDD"<<endl;
+    cout<<droga<<endl;
     string t = wskazSciezke(droga);
     cout<<t<<endl;
 }
@@ -114,38 +115,53 @@ string DP::wskazSciezke(string droga){
     string res = "";
     string temp = "";
 
-    int n = tr.rozmiar-1;
-    int start = droga[1] - 48;
-    int m = droga[0] - 48;
+    int wsk = 0;
+    int n = 0;
+    int start = droga[wsk+1] - 48;
+    int m = droga[wsk] - 48;
     int tem = 0;
     int liczba = stoi(tr.table[tr.rozmiar-1],0,10);
-    cout<<liczba<<endl;
 
     int save = n;
 
+
     for(int i=0;i<rozGraf-2;i++){
-        while(true){
-            for(int j=1;true;j++){
-                if(tempTr.table[n]== to_string(liczba)){
+        if(start==2){
+            for (int k = 0; k < 2; k++) {
+
+                if (k == m) {
+                    res += tr.table[n][1];
+                    res += tr.table[n][0];
                     break;
                 }
-                temp+=tempTr.table[n];
-                n--;
+                n+=2;
+            }
+            break;
+        }
+        while(true){
+            for(int j=1;true;j++){
+                if(tr.table[n]== to_string(liczba)){
+                    n++;
+                    break;
+                }
+                temp+=tr.table[n];
+                n++;
             }
             if(tem==m) {
-                cout<<n<<" n"<<endl;
                 n = save;
-                cout<<n<<" n"<<endl;
-                cout<<temp<<" te"<<endl;
                 break;
             }
             tem++;
             save = n;
-            cout<<temp<<" te"<<endl;
-            cout<<n<<" n"<<endl;
             temp = "";
         }
-        
+        res += temp[temp.length()-1];
+        liczba = temp[temp.length()-1] - 48;
+        wsk += 2;
+        m = droga[wsk] - 48;
+        start = droga[wsk+1] - 48;
+        temp = "";
+        tem = 0;
     }
 
     return res;
