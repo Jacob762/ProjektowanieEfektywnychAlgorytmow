@@ -8,26 +8,29 @@
 #include "../../Struktury/Graf/Graf.h"
 #include "../../Struktury/TablicaI/tablicaI.h"
 #include <string>
+#include <vector>
 
 class DP {
 private:
-    int count;
-    string trasa;
+
     int wynik;
     Graf graf;
+
+    int **path;
+    tablicaI sciezka;
+    void getPath(int mask, int pos);
+    void makePath(int start);
+
     int rozGraf;
     int st;
-    int DPuj(int size,int start, bool maska[]);
-    bool *odwiedzone;
-    int FindMin(tablicaI data, int start);
-    tablica tr;
-    tablica tempTr;
-    void reconstructRoute();
-    string wskazSciezke(string droga);
+
 public:
     DP(string nazwa, int start);
     int getWynik();
-    string getTrasa();
+    void getTrasa();
+    int getSize();
+    DP(int size);
+    int DPuj(int start, int maska);
 };
 
 

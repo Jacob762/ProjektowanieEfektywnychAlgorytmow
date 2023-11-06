@@ -9,9 +9,15 @@ using namespace std;
 
 BruteForce::BruteForce(string nazwa, int start){
     graf = Graf(nazwa);
+    graf.pokaz();
     rozGraf = graf.getRozmiar();
     sciezka = INT_MAX;
     zbrutuj(start);
+}
+
+BruteForce::BruteForce(int size) {
+    graf = Graf(size);
+    rozGraf = graf.getRozmiar();
 }
 
 void BruteForce::zbrutuj(int start) {
@@ -23,7 +29,7 @@ void BruteForce::zbrutuj(int start) {
     char go =  start + 48;
     permute(wierz,0,rozGraf-1,go);
 
-    while(!permutacje.isEmpty()){
+    while(permutacje.rozmiar!=0){
         int tempSciezka = 0;
         for(int i=0;i<rozGraf-1;i++){
             a = (int) permutacje.table[0][i] - 49;

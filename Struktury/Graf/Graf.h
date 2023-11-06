@@ -21,11 +21,14 @@ private:
     int **temp;
     void dodajMacierz(string nazwa);
 public:
+    Graf(int size);
     Graf();
     Graf(string nazwa);
     void pokaz();
     int **grafMacierz;
     int getRozmiar();
+
+    void wygeneruj(int size);
 };
 
 

@@ -10,19 +10,20 @@
 
 class BruteForce {
 private:
+
     Graf graf;
     int sciezka;
     string trasa;
     tablica permutacje;
-    void zbrutuj(int start);
+
     int rozGraf;
     void permute(string a, int l, int r, char k);
 public:
     BruteForce(string nazwa, int start);
     string getTrasa();
     int getSciezka();
-
-
+    void zbrutuj(int start);
+    BruteForce(int size);
 };
 
 

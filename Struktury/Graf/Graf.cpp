@@ -13,6 +13,10 @@ Graf::Graf() {
     rozmiar = 0;
 }
 
+Graf::Graf(int size) {
+    wygeneruj(size);
+}
+
 Graf::Graf(string nazwa) {
     rozmiar = 0;
     dodajMacierz(nazwa);
@@ -60,3 +64,15 @@ void Graf::pokaz() {
     cout<<"\n\n";
 }
 
+void Graf::wygeneruj(int size){
+    ::srand(time(NULL));
+    rozmiar=size;
+    grafMacierz = new int*[size];
+    for(int i=0;i<size;i++){
+        grafMacierz[i] = new int [size];
+        for(int j=0;j<size;j++){
+            grafMacierz[i][j] = rand()%2000+1;
+            if(j==i) grafMacierz[i][j] = 0;
+        }
+    }
+}
