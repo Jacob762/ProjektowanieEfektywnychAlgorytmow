@@ -6,35 +6,47 @@
 
 using namespace std;
 
-DP::DP(string nazwa, int start) {
+DP::DP(string &nazwa, int start) { //konstruktor do wywolania
     graf = Graf(nazwa);
 
     wynik = INT_MAX;
     rozGraf = graf.getRozmiar();
-    st = start-1;
+    st = 0;
 
+
+    memo = new int*[1 << rozGraf];
     path = new int*[1 << rozGraf];
     for(int i=0;i< 1<<rozGraf;i++) {
         path[i] = new int [rozGraf];
-        for(int k=0;k<rozGraf;k++) path[i][k]= -1;
+        memo[i] = new int [rozGraf];
+        for(int k=0;k<rozGraf;k++) {
+            path[i][k]= -1;
+            memo[i][k]= -1;
+        }
     }
 
 
-
-    wynik = DPuj(start-1,0);
+    wynik = DPuj(0,0);
     sciezka = tablicaI();
-    //getPath(1,0);
-    //makePath(start);
+    trasa(1,0);
+    makePath(start);
+
 }
 
 
-DP::DP(int size){
+DP::DP(int size){ //konstruktor do prowadzenia badan
+    st = 0;
     graf = Graf(size);
     rozGraf = graf.getRozmiar();
     path = new int*[1 << rozGraf];
+    memo = new int*[1 << rozGraf];
     for(int i=0;i< 1<<rozGraf;i++) {
         path[i] = new int [rozGraf];
-        for(int k=0;k<rozGraf;k++) path[i][k]= -1;
+        memo[i] = new int [rozGraf];
+        for(int k=0;k<rozGraf;k++) {
+            path[i][k]= -1;
+            memo[i][k]= -1;
+        }
     }
 }
 
@@ -48,14 +60,18 @@ int DP::DPuj(int start, int maska) {
     if(maska == (1 << rozGraf) - 1){
         return graf.grafMacierz[start][st];
     }
+    //zwracanie zapamietywanego wyniku obliczonej juz trasy
+    if(memo[maska][start] != -1){
+        return memo[maska][start];
+    }
 
     int next = -1;
     int res = INT_MAX;
 
     for(int i=0;i<rozGraf;i++) {
         if(!(maska & (1 << i))) {
-            int nowaMaska = maska | (1<<i);
-            int cost = graf.grafMacierz[start][i] + DPuj(i,nowaMaska);
+            int nextmask = maska | (1<<i);
+            int cost = graf.grafMacierz[start][i] + DPuj(i,nextmask);
             if(cost<res){
                 res = cost;
                 next = i;
@@ -65,18 +81,18 @@ int DP::DPuj(int start, int maska) {
 
     path[maska][start] = next;
 
-    return res;
+    return memo[maska][start] = res;
 
 }
 
-void DP::getPath(int mask, int pos) {
+void DP::trasa(int mask, int pos) {
     if (mask == (1 << rozGraf) - 1) {
         sciezka.dodajNaKoniec(pos+1);
         return;
     }
     int next = path[mask][pos];
     sciezka.dodajNaKoniec(pos+1);
-    getPath(mask | (1 << next), next);
+    trasa(mask | (1 << next), next);
 }
 
 void DP::makePath(int start){

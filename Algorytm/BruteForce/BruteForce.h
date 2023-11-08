@@ -20,7 +20,7 @@ private:
     void permute(string a, int l, int r, char k);
 public:
     BruteForce(string nazwa, int start);
-    string getTrasa();
+    void getTrasa();
     int getSciezka();
     void zbrutuj(int start);
     BruteForce(int size);

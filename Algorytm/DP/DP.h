@@ -8,7 +8,7 @@
 #include "../../Struktury/Graf/Graf.h"
 #include "../../Struktury/TablicaI/tablicaI.h"
 #include <string>
-#include <vector>
+
 
 class DP {
 private:
@@ -16,16 +16,17 @@ private:
     int wynik;
     Graf graf;
 
+    int **memo;
     int **path;
     tablicaI sciezka;
-    void getPath(int mask, int pos);
+    void trasa(int mask, int pos);
     void makePath(int start);
 
     int rozGraf;
     int st;
 
 public:
-    DP(string nazwa, int start);
+    DP(string &nazwa, int start);
     int getWynik();
     void getTrasa();
     int getSize();

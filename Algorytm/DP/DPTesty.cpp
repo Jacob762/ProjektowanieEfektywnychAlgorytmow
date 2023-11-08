@@ -32,7 +32,7 @@ void DPTesty::test(int wielkoscZestawu,int iloscOperacji,int iloscWynikow){
         for(int i=0;i<50;i++){
             dp = DP(wielkoscZestawu);
             t1 = chrono::high_resolution_clock::now();
-            dp.DPuj(0,0);
+            dp.DPuj(1,0);
             t2 = chrono::high_resolution_clock::now();
             chrono::duration<double> time_span = std::chrono::duration_cast<chrono::duration<double>>(t2 - t1);
             srednia += std::chrono::duration<double>(time_span).count();

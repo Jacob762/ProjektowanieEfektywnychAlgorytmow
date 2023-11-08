@@ -9,7 +9,6 @@ using namespace std;
 
 BruteForce::BruteForce(string nazwa, int start){
     graf = Graf(nazwa);
-    graf.pokaz();
     rozGraf = graf.getRozmiar();
     sciezka = INT_MAX;
     zbrutuj(start);
@@ -62,8 +61,10 @@ void BruteForce::permute(string a, int l, int r, char k)
     }
 }
 
-string BruteForce::getTrasa() {
-    return trasa;
+void BruteForce::getTrasa() {
+    for(int i=0;i<trasa.length();i++){
+        cout<<trasa[i]<<" ";
+    }
 }
 
 int BruteForce::getSciezka() {

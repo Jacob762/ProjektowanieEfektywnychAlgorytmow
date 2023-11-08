@@ -40,6 +40,8 @@ void Graf::dodajMacierz(string nazwa) {
             break;
         }
     }
+    for(int i=0;i<5;i++) file >> line;
+
 
     grafMacierz = new int*[rozmiar];
     for(int i=0;i<rozmiar;i++){
