@@ -33,16 +33,7 @@ void Graf::dodajMacierz(string nazwa) {
         cout<<"ERROR"<<endl;
         return;
     }
-    while(true){
-        file >> line;
-        if(line.substr(0,9) == "DIMENSION") {
-            file >> rozmiar;
-            break;
-        }
-    }
-    for(int i=0;i<5;i++) file >> line;
-
-
+    file >> rozmiar;
     grafMacierz = new int*[rozmiar];
     for(int i=0;i<rozmiar;i++){
         grafMacierz[i] = new int [rozmiar];
