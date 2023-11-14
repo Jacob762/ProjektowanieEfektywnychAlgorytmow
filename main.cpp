@@ -1,7 +1,8 @@
 #include <iostream>
 #include "Struktury/Graf/Graf.h"
-#include "Algorytm/BruteForce/BruteForce.h"
 #include "Algorytm/DP/DP.h"
+#include "Algorytm/BruteForce/BruteForce.h"
+
 
 using namespace std;
 

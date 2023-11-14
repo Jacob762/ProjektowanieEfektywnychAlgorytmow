@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <algorithm>
 #include "BruteForce.h"
 
 using namespace std;
@@ -20,51 +21,87 @@ BruteForce::BruteForce(int size) {
 }
 
 void BruteForce::zbrutuj(int start) {
-    string wierz = "";
-    for(int i=1;i<rozGraf+1;i++) wierz+= to_string(i);
+
+    wie = tablicaI();
+
+    ite = 0;
+    int tab[rozGraf];
+
+    for(int i=0;i<rozGraf;i++) {
+        tab[i] = i;
+    }
 
     int a,b; //a,b - zmienne do iterowania po permutacjach
 
-    char go =  start + 48;
-    permute(wierz,0,rozGraf-1,go);
+    findPermutations(tab,rozGraf,start-1);
 
-    while(permutacje.rozmiar!=0){
+
+    while(ite != rozmiar){
         int tempSciezka = 0;
         for(int i=0;i<rozGraf-1;i++){
-            a = (int) permutacje.table[0][i] - 49;
-            b = (int) permutacje.table[0][i+1] - 49;
+            a = (int) wyniki[ite][i];
+            b = (int) wyniki[ite][i+1];
             tempSciezka+=graf.grafMacierz[a][b];
         }
         tempSciezka += graf.grafMacierz[b][start-1];
         if(tempSciezka<sciezka) {
+            for(int i=0;i<rozGraf;i++) wie.usunZPoczatku();
+            wie.usunZPoczatku();
             sciezka = tempSciezka;
-            trasa = permutacje.table[0];
-            trasa += to_string(start);
+            for(int i=0;i<rozGraf;i++) wie.dodajNaKoniec(wyniki[ite][i]+1);
+            wie.dodajNaKoniec(start);
         }
-        permutacje.usunZPoczatku();
+        ite++;
     }
 }
 
-void BruteForce::permute(string a, int l, int r, char k)
+int silnia(int n){
+    int result = 1;
+    for(int i=1;i<=n;i++) result*=i;
+    return result;
+}
+
+void BruteForce::findPermutations(int a[], int n,int start)
 {
+    rozmiar = silnia(rozGraf-1);
+    wyniki = new int*[rozmiar];
+    for(int i=0;i<rozmiar;i++) {
+        wyniki[i] = new int[rozGraf];
+        for(int j=0;j<rozGraf;j++) wyniki[i][j] = -1;
+    }
+
+
+    int iterator = 0;
+
+    do {
+        if(a[0]!=start) continue;
+
+        for(int i=0;i<rozGraf;i++){
+            wyniki[iterator][i] = a[i];
+        }
+        iterator++;
+    } while (next_permutation(a, a + n));
+}
+
+void BruteForce::permute(string a, int l, int r, int k)
+{
+    if(wie.table[0]!=k) return;
     if (l == r){
-        if(a[0]!=k) return;
-        permutacje.dodajNaKoniec(a);
+        //wyniki.push_back(wie);
+        //permutacje.dodajNaKoniec(a);
     } else {
         for (int i = l; i <= r; i++) {
-            swap(a[l], a[i]);
+            swap(wie.table[l], wie.table[i]);
 
             permute(a, l + 1, r,k);
 
-            swap(a[l], a[i]);
+            swap(wie.table[l], wie.table[i]);
         }
     }
 }
 
 void BruteForce::getTrasa() {
-    for(int i=0;i<trasa.length();i++){
-        cout<<trasa[i]<<" ";
-    }
+    wie.pokaz();
 }
 
 int BruteForce::getSciezka() {

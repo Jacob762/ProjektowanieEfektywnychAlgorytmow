@@ -6,7 +6,7 @@
 #define PEAPROJEKT1_DP_H
 
 #include "../../Struktury/Graf/Graf.h"
-#include "../../Struktury/TablicaI/tablicaI.h"
+
 #include <string>
 
 
