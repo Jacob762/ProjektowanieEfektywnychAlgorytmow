@@ -8,6 +8,7 @@
 #include <iostream>
 #include "../Tablica/tablica.h"
 #include "../TablicaI/tablicaI.h"
+
 // nie da sie includowac dwoch list roznych niewiadomo czemu XD
 
 using namespace std;
