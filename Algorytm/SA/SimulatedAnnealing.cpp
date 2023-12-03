@@ -22,6 +22,7 @@ SimulatedAnnealing::SimulatedAnnealing(string nazwa, int start, double wspolczyn
     }
 
     double to = tempStart();
+    greedy(start);
     simulation(to,wspolczynnikChlodzenia,tempKonc);
 }
 
@@ -53,7 +54,7 @@ SimulatedAnnealing::SimulatedAnnealing(int size) {
     }
 
     double to = tempStart();
-
+    greedy(0);
 }
 
 double SimulatedAnnealing::tempStart() {
@@ -87,6 +88,7 @@ void SimulatedAnnealing::simulation(double tempPocz,double wspolczynnikChlodzeni
     uniform_real_distribution<double> los(0.0, 1.0);
 
     lista tempTrasa = lista();
+
     for(int i=0;i<rozGraf;i++) tempTrasa.dodajNaKoniec(new listaElement(sciezka[i]));
     tempTrasa.dodajNaKoniec(new listaElement(sciezka[0]));
 
@@ -160,4 +162,32 @@ void SimulatedAnnealing::nowaTrasa(lista &tempTrasa){
         tempTrasa.usunZPoczatku();
     }
     trasa.dodajNaKoniec(new listaElement(sciezka[0]+1));
+}
+
+void SimulatedAnnealing::greedy(int start){
+
+    int tempTab[rozGraf];
+    bool odwiedzone[rozGraf];
+
+    for(int i=0;i<rozGraf;i++) odwiedzone[i] = false;
+
+    int k = 0;
+    int i = start;
+    tempTab[0] = start;
+    while(k < rozGraf){
+        int max = INT_MAX;
+        int tempJ = -1;
+        odwiedzone[i] = true;
+        for(int j=0;j<rozGraf;j++){
+            if(graf.grafMacierz[i][j]<max && !odwiedzone[j]){
+                max = graf.grafMacierz[i][j];
+                tempJ = j;
+            }
+        }
+        i = tempJ;
+        k++;
+        tempTab[k] = tempJ;
+    }
+
+    for(int n=0;n<rozGraf;n++) sciezka[n] = tempTab[n];
 }

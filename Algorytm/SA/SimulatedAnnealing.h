@@ -28,7 +28,10 @@ private:
 
     void nowyTemp(lista &tempTrasa);
     void nowaTrasa(lista &tempTrasa);
+    void greedy(int start);
 public:
+
+
     SimulatedAnnealing(string nazwa, int start,double wspolczynnikChlodzenia, double tempKonc);
     int getWynik();
     void getTrasa();
@@ -36,6 +39,8 @@ public:
     double getTO();
     SimulatedAnnealing(int size);
     void simulation(double tempPocz,double wspolczynnikChlodzenia, double tempKonc);
+
+
 };
 
 

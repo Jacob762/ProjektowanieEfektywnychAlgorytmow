@@ -20,18 +20,10 @@ int main() {
                     1776,1608,1839,1950,2755,36230,5620,
                     1326,1163,2465,2720,14422};
 
-    double t = 747.01;
 
-    int i = 1;
-    while(t > 0.01){
-        cout<<i++<<endl;
-        t *= 0.99;
-        cout<<t<<endl;
+    for(int i=0;i<19;i++){
+        cout<<i<<endl;
+        SATesty sa = SATesty(nazwy[i],wspolcz,best[i]);
     }
-
-
-    //SimulatedAnnealing sa = SimulatedAnnealing(naz,0,0.99,0.01);
-   // cout<<sa.getWynik()<<endl;
-
     return 0;
 }

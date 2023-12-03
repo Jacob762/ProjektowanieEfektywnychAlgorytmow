@@ -62,12 +62,7 @@ void SATesty::testCzas(int wielkoscZestawu,int iloscOperacji,int iloscWynikow, d
     for(int i=0;i<iloscWynikow;i++) srednia2 += tablicaSrednich1[i];
     srednia2 /= iloscWynikow;
     if(tablicaFile.is_open()){
-        tablicaFile<<"SA: "<<wspolczynnik<<endl;
-        for(int i=0;i<iloscWynikow;i++) tablicaFile<<tablicaSrednich1[i]*pow(10,9)<<" ";
-        tablicaFile<<endl;
         tablicaFile<<srednia2 * pow(10,9)<<endl;
-        tablicaFile<<rozmiar;
-        tablicaFile<<endl<<endl;
     }
     cout<<"Czasy zakonczone"<<endl;
     tablicaFile.close();
@@ -99,13 +94,7 @@ void SATesty::testOptymalne(string &plik, double wspolczynnik, int bestcost){
     srednia2 /= 5;
 
     if(File.is_open()){
-        File<<"SA: "<<wspolczynnik<<endl;
-        for(int i=0;i<5;i++) File<<tablicaSrednich1[i]<<" ";
-        File<<endl;
         File<<srednia2<<endl;
-        File<<plik<<endl;
-        File<<sa.getSize();
-        File<<endl<<endl;
     }
 
 }
