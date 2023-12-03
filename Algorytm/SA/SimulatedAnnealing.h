@@ -20,18 +20,22 @@ private:
     lista trasa;
 
     int rozGraf;
-    int st;
 
     int obliczKoszt();
     void nowaSciezka();
 
+    double tempStart();
+
+    void nowyTemp(lista &tempTrasa);
+    void nowaTrasa(lista &tempTrasa);
 public:
-    SimulatedAnnealing(string nazwa, int start,double tempPocz,double wspolczynnikChlodzenia);
+    SimulatedAnnealing(string nazwa, int start,double wspolczynnikChlodzenia, double tempKonc);
     int getWynik();
     void getTrasa();
     int getSize();
+    double getTO();
     SimulatedAnnealing(int size);
-    void simulation(int start,double tempPocz,double wspolczynnikChlodzenia);
+    void simulation(double tempPocz,double wspolczynnikChlodzenia, double tempKonc);
 };
 
 

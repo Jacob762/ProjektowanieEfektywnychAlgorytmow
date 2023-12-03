@@ -119,6 +119,7 @@ bool lista::isEmpty() {
 }
 
 int lista::getHead(){
+    if(!head) return -1;
     return head->data;
 }
 
@@ -129,7 +130,6 @@ bool lista::isEven(){
 
 void lista::usunZPoczatku(){
     if(rozmiar==0){
-        //cout<<"Lista pusta"<<endl;
         return;
     }
     if(!safetyFirst()) {
