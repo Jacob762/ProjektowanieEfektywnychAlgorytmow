@@ -9,9 +9,10 @@ using namespace std;
 
 int main() {
 
-    double wspolcz = 0.9999;
+    double wspolcz;
+    string naz;
+    int exit;
 
-    string naz = "br17.atsp";
     string nazwy[19] = {"br17.atsp","ft53.atsp","ft70.atsp","ftv33.atsp","ftv35.atsp","ftv38.atsp"
     ,"ftv44.atsp","ftv47.atsp","ftv55.atsp","ftv64.atsp","ftv70.atsp","ftv170.atsp"
     ,"kro124p.atsp","p43.atsp","rbg323.atsp","rbg358.atsp","rbg403.atsp"
@@ -20,10 +21,17 @@ int main() {
                     1776,1608,1839,1950,2755,36230,5620,
                     1326,1163,2465,2720,14422};
 
-
-    for(int i=0;i<19;i++){
-        cout<<i<<endl;
-        SATesty sa = SATesty(nazwy[i],wspolcz,best[i]);
+    for(;;){
+        cout<<"Podaj nazwe pliku"<<endl;
+        cin>>naz;
+        cout<<"Podaj wspolczynnik chlodzenia"<<endl;
+        cin>>wspolcz;
+        SimulatedAnnealing sa = SimulatedAnnealing(naz,0,wspolcz,0.001);
+        cout<<sa.getWynik()<<endl;
+        sa.getTrasa();
+        cout<<"Czy chcesz kontynuowac? 1 lub 0"<<endl;
+        cin>>exit;
+        if(exit==0) return 0;
     }
-    return 0;
+
 }

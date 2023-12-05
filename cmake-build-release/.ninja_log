@@ -54,3 +54,7 @@
 303	373	7233366287614363	PEAProjekt1.exe	b1fbe8c4696ceab2
 1	259	7233366664911749	CMakeFiles/PEAProjekt1.dir/main.cpp.obj	b8590342f6a3b93a
 259	328	7233366665561761	PEAProjekt1.exe	b1fbe8c4696ceab2
+2	509	7234753214526172	CMakeFiles/PEAProjekt1.dir/main.cpp.obj	b8590342f6a3b93a
+23	567	7234753215116184	CMakeFiles/PEAProjekt1.dir/Algorytm/SA/SATesty.cpp.obj	7f572bf918fe04fa
+16	575	7234753215186175	CMakeFiles/PEAProjekt1.dir/Algorytm/SA/SimulatedAnnealing.cpp.obj	2256f3a144b7e5c6
+575	738	7234753216776179	PEAProjekt1.exe	b1fbe8c4696ceab2
