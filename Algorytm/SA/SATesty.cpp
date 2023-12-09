@@ -42,7 +42,7 @@ void SATesty::testCzas(int wielkoscZestawu,int iloscOperacji,int iloscWynikow, d
 
     for(int j=0;j<iloscWynikow;j++){
         double srednia = 0;
-        for(int i=0;i<10;i++){
+        for(int i=0;i<3;i++){
             if(!los){
                 SA = SimulatedAnnealing(wielkoscZestawu);
             } else{

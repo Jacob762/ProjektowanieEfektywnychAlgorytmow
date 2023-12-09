@@ -11,18 +11,18 @@ SimulatedAnnealing::SimulatedAnnealing(string nazwa, int start, double wspolczyn
     wynik = INT_MAX;
     rozGraf = graf.getRozmiar();
 
-    sciezka = new int[rozGraf];
+    sciezkaFinal = new int[rozGraf];
     trasa = lista();
 
-    sciezka[0] = start;
+    sciezkaFinal[0] = start;
 
     for(int i=1;i<rozGraf;i++){
         if(i==start) continue;
-        sciezka[i] = i;
+        sciezkaFinal[i] = i;
     }
 
     double to = tempStart();
-    greedy(start);
+    //greedy(start);
     simulation(to,wspolczynnikChlodzenia,tempKonc);
 }
 
@@ -31,7 +31,8 @@ int SimulatedAnnealing::getWynik() {
 }
 
 void SimulatedAnnealing::getTrasa() {
-    trasa.pokaz();
+    for(int i=0;i<rozGraf;i++) cout<<sciezkaFinal[i]+1<<" ";
+    cout<<sciezkaFinal[0]+1<<endl;
 }
 
 int SimulatedAnnealing::getSize() {
@@ -44,17 +45,17 @@ SimulatedAnnealing::SimulatedAnnealing(int size) {
     wynik = INT_MAX;
     rozGraf = graf.getRozmiar();
 
-    sciezka = new int[rozGraf];
+    sciezkaFinal = new int[rozGraf];
     trasa = lista();
 
-    sciezka[0] = 1;
+    sciezkaFinal[0] = 1;
 
     for(int i=1;i<rozGraf;i++){
-        sciezka[i] = i;
+        sciezkaFinal[i] = i;
     }
 
     double to = tempStart();
-    greedy(0);
+
 }
 
 double SimulatedAnnealing::tempStart() {
@@ -65,10 +66,10 @@ double SimulatedAnnealing::tempStart() {
     int b;
 
     for(int i=0;i<10000;i++){
-        nowaSciezka();
-        a = obliczKoszt();
-        nowaSciezka();
-        b = obliczKoszt();
+        nowaSciezka(sciezkaFinal);
+        a = obliczKoszt(sciezkaFinal);
+        nowaSciezka(sciezkaFinal);
+        b = obliczKoszt(sciezkaFinal);
         delta += ::abs(a-b);
     }
 
@@ -88,47 +89,72 @@ void SimulatedAnnealing::simulation(double tempPocz,double wspolczynnikChlodzeni
     uniform_real_distribution<double> los(0.0, 1.0);
 
     lista tempTrasa = lista();
+    int *sciezka = new int[rozGraf];
+    sciezka[0] = 1;
 
-    for(int i=0;i<rozGraf;i++) tempTrasa.dodajNaKoniec(new listaElement(sciezka[i]));
-    tempTrasa.dodajNaKoniec(new listaElement(sciezka[0]));
+    for(int i=1;i<rozGraf;i++){
+        sciezka[i] = i;
+    }
+
+    greedy(0,sciezka);
+    cout<<obliczKoszt(sciezka)<<" GREEDY"<<endl;
+    for(int i=0;i<rozGraf;i++) cout<<sciezka[i]+1<<" ";
+    cout<<sciezka[0]+1<<endl;
 
     int najWynik = wynik;
     double roznica = 0;
     int k=0;
     double temperatura = tempPocz;
-
     int nowaOdleglosc = 0;
     int aktualnaOdleglosc = najWynik;
 
-    int staraOdleglosc = -1;
-    int powtorka = 0;
-
     while(temperatura > tempKonc){
 
-        nowaOdleglosc = obliczKoszt();
+        nowaOdleglosc = obliczKoszt(sciezka);
         roznica = nowaOdleglosc - aktualnaOdleglosc;
 
         if(roznica < 0 || exp(-roznica/(temperatura)) > los(gen)){
-            nowyTemp(tempTrasa);
+            nowyTemp(tempTrasa,sciezka);
             aktualnaOdleglosc = nowaOdleglosc;
-            staraOdleglosc = aktualnaOdleglosc;
+
+            if(aktualnaOdleglosc-najWynik < najWynik/4){
+                int powtorka = 0;
+                int staraOdleglosc = aktualnaOdleglosc;
+                int *tempSciezka = new int [rozGraf];
+                for(int i=0;i<rozGraf;i++) tempSciezka[i] = sciezka[i];
+                while(powtorka<50){
+                    nowaSciezka(tempSciezka);
+                    int wyn = obliczKoszt(tempSciezka);
+                    if(wyn < staraOdleglosc) staraOdleglosc = wyn;
+                    if(staraOdleglosc==aktualnaOdleglosc){
+                        powtorka++;
+                    } else {
+                        for(int i=0;i<rozGraf;i++) sciezka[i] = tempSciezka[i];
+                        aktualnaOdleglosc = staraOdleglosc;
+                        powtorka = 0;
+                    }
+                    for(int i=0;i<rozGraf;i++) tempSciezka[i] = sciezka[i];
+                }
+            }
         }
 
         if(aktualnaOdleglosc < najWynik){
             najWynik = aktualnaOdleglosc;
-            nowaTrasa(tempTrasa);
+            nowaTrasa(tempTrasa,sciezka);
+            for(int i=0;i<rozGraf;i++) sciezkaFinal[i] = sciezka[i];
         }
 
-        nowaSciezka();
-        k++;
+        for(int i=0;i<rozGraf;i++) sciezka[i] = sciezkaFinal[i];
 
+        k++;
+        nowaSciezka(sciezka);
         temperatura *= wspolczynnikChlodzenia;
 
     }
     wynik = najWynik;
 }
 
-int SimulatedAnnealing::obliczKoszt() {
+int SimulatedAnnealing::obliczKoszt(int *&sciezka) {
     int res = 0;
     for(int i=0;i<rozGraf-1;i++){
         res += graf.grafMacierz[sciezka[i]][sciezka[i+1]];
@@ -137,7 +163,7 @@ int SimulatedAnnealing::obliczKoszt() {
     return res;
 }
 
-void SimulatedAnnealing::nowaSciezka() {
+void SimulatedAnnealing::nowaSciezka(int *&sciezka) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, rozGraf-1);
@@ -149,13 +175,13 @@ void SimulatedAnnealing::nowaSciezka() {
     sciezka[indeks2] = temp;
 }
 
-void SimulatedAnnealing::nowyTemp(lista &tempTrasa){
+void SimulatedAnnealing::nowyTemp(lista &tempTrasa, int *&sciezka){
     if(!tempTrasa.isEmpty()){for(int i=0;i<rozGraf+1;i++) tempTrasa.usunZPoczatku();}
     for(int i=0;i<rozGraf;i++) tempTrasa.dodajNaKoniec(new listaElement(sciezka[i]));
     tempTrasa.dodajNaKoniec(new listaElement(sciezka[0]+1));
 }
 
-void SimulatedAnnealing::nowaTrasa(lista &tempTrasa){
+void SimulatedAnnealing::nowaTrasa(lista &tempTrasa, int *&sciezka){
     if(!trasa.isEmpty()){for(int i=0;i<rozGraf+1;i++) trasa.usunZPoczatku();}
     for(int i=0;i<rozGraf;i++) {
         trasa.dodajNaKoniec(new listaElement(tempTrasa.getHead()+1));
@@ -164,8 +190,7 @@ void SimulatedAnnealing::nowaTrasa(lista &tempTrasa){
     trasa.dodajNaKoniec(new listaElement(sciezka[0]+1));
 }
 
-void SimulatedAnnealing::greedy(int start){
-
+void SimulatedAnnealing::greedy(int start, int *&sciezka){
     int tempTab[rozGraf];
     bool odwiedzone[rozGraf];
 

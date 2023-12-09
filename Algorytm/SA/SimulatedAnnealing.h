@@ -16,19 +16,19 @@ private:
     int wynik;
     Graf graf;
 
-    int* sciezka;
+    int* sciezkaFinal;
     lista trasa;
 
     int rozGraf;
 
-    int obliczKoszt();
-    void nowaSciezka();
-
     double tempStart();
 
-    void nowyTemp(lista &tempTrasa);
-    void nowaTrasa(lista &tempTrasa);
-    void greedy(int start);
+    int obliczKoszt(int *&sciezka);
+    void nowyTemp(lista &tempTrasa, int *&sciezka);
+    void nowaSciezka(int *&sciezka);
+    void nowaTrasa(lista &tempTrasa, int *&sciezka);
+
+    void greedy(int start, int *&sciezka);
 public:
 
 
@@ -39,6 +39,9 @@ public:
     double getTO();
     SimulatedAnnealing(int size);
     void simulation(double tempPocz,double wspolczynnikChlodzenia, double tempKonc);
+
+
+
 
 
 };
