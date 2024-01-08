@@ -24,7 +24,9 @@ class ACO {
 
     int obliczKoszt(int *&sciezka);
     void nowaSciezka(int *&sciezka);
-
+    double cal_start();
+    double propability_cal();
+    double ruletka(double *&prawdopodobienstwo,int n);
     void greedy(int start, int *&sciezka);
 public:
 
@@ -38,9 +40,8 @@ public:
     ACO(string nazwa);
     ACO(int size);
 
-    double cal_start();
 
-    double propability_cal();
+    void ruletka(double *&prawdopodobienstwo, int n, double *&aktualneMiasta);
 };
 
 
