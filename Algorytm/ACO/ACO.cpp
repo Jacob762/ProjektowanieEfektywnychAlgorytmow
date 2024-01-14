@@ -26,7 +26,9 @@ ACO::ACO(string nazwa) {
     }
 
     greedy(0,sciezkaFinal);
-    simulation();
+    simulation(3.6,14.0,0.5,100.0);
+
+
 }
 
 int ACO::getWynik() {
@@ -57,21 +59,20 @@ ACO::ACO(int size) {
         sciezkaFinal[i] = i;
     }
 
-    double to = tempStart();
-
 }
 
 double ACO::cal_start() {
+    tablicaI tab = tablicaI();
     double delta = 0;
-
+    for(int i=0;i<rozGraf;i++) tab.dodajNaKoniec(i);
     int a;
     int b;
 
     for(int i=0;i<10000;i++){
-        nowaSciezka(sciezkaFinal);
-        a = obliczKoszt(sciezkaFinal);
-        nowaSciezka(sciezkaFinal);
-        b = obliczKoszt(sciezkaFinal);
+        nowaSciezka(tab);
+        a = obliczKoszt(tab);
+        nowaSciezka(tab);
+        b = obliczKoszt(tab);
         delta += ::abs(a-b);
     }
 
@@ -81,16 +82,20 @@ double ACO::cal_start() {
 }
 
 double ACO::getTO() {
-    return tempStart();
+    return 80.0;
 }
 
-void ACO::simulation() {
+void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double feromonIN) { ///todo przebudowanie kodu pod latwiejsze dostosowywanie paramtrow, zabawa paramterami, sprobowac uzyc greedy do poczatkowej trasy?
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<double> los(0.0, 1.0);
 
+    double feromon_start = cal_start();
+    feromon_start = (double) rozGraf/ feromon_start;
+
     double *prawdopodobienstwo;
     double *aktualneMiasta;
+    tablicaI path = tablicaI();
     int *sciezka = new int[rozGraf];
     double **feromony;
     double **desire;
@@ -98,9 +103,10 @@ void ACO::simulation() {
     dodaj_feromony = new double * [rozGraf];
     desire = new double * [rozGraf];
     feromony = new double * [rozGraf];
-    double alpha = 1.0;
-    double beta = 1.0;
-    double evaporation = 0.5;
+    double alpha = alphaIN;
+    double beta = betaIN;   //a=3.5,b=5.9 dla >=12
+    double evaporation = evaporationIN;
+    double feromon = feromonIN;
 
     double mianownik;
 
@@ -110,74 +116,135 @@ void ACO::simulation() {
         desire[i]= new double [rozGraf];
         dodaj_feromony[i] = new double [rozGraf];
         for(int j=0;j<rozGraf;j++) {
-            feromony[i][j] = 0.200;
+            feromony[i][j] = feromon_start;
             dodaj_feromony[i][j] = 0.0;
-            desire[i][j] = 200 * (1/(double)graf.grafMacierz[i][j]);
+            if(graf.grafMacierz[i][j]!=0){
+                desire[i][j] = (feromony[i][j]*1000) * (1/(double)graf.grafMacierz[i][j]);
+            } else desire[i][j] = 0;
         }
     }
 
-    greedy(0,sciezka);
-    cout<<obliczKoszt(sciezka)<<" GREEDY"<<endl;
-    for(int i=0;i<rozGraf;i++) cout<<sciezka[i]+1<<" ";
-    cout<<sciezka[0]+1<<endl;
+//    int *greed = new int [rozGraf];
+//    for(int i=0;i<rozGraf;i++) greed[i] = i;
+//    greedy(0,greed);
+//    tablicaI tab = tablicaI();
+//    for(int i=0;i<rozGraf;i++) {
+//        tab.dodajNaKoniec(greed[i]);
+//        cout<<greed[i]<<" ";
+//    }
+//    cout<<obliczKoszt(tab)<<endl;
 
-    int najWynik = wynik;
-    double roznica = 0;
-    int staraOdleglosc = 0;
+//    for(int i=0;i<rozGraf-1;i++){
+//        feromony[greed[i]][greed[i+1]] += 0.1;
+//        desire[greed[i]][greed[i+1]] = (feromony[greed[i]][greed[i+1]]*1000) * (1/(double)graf.grafMacierz[greed[i]][greed[i+1]]);
+//    }
+//    feromony[greed[rozGraf-1]][greed[0]] += 0.1;
+//    desire[greed[rozGraf-1]][greed[0]] = (feromony[greed[rozGraf-1]][greed[0]]*1000) * (1/(double)graf.grafMacierz[greed[rozGraf-1]][greed[0]]);
+ //   greedy(0,sciezka);
+//    cout<<obliczKoszt(sciezka)<<" GREEDY"<<endl;
+  //  for(int i=0;i<rozGraf;i++) cout<<sciezka[i]+1<<" ";
+ //   cout<<sciezka[0]+1<<endl;
+
+    //int najWynik = wynik;
+    int najWynik = INT_MAX;
+    int staraOdleglosc = INT_MAX;
     int aktualnaOdleglosc = najWynik;
     int powtorka=0;
-    int iteracje = 100;
+    int iteracje = 10;
+
     while(powtorka<iteracje){
 
         for(int k=0;k<rozGraf;k++){
 
-            for(int i=0;i<rozGraf;i++){ //petla do znalezienia sciezki startujacej od kazego wierzcholka
+            double licznik;
+            bool odwiedzone[rozGraf];
+            for(int initOd=0;initOd<rozGraf;initOd++) odwiedzone[initOd] = false;
+            int miasto = k;
+            odwiedzone[k] = true;
+            path.dodajNaKoniec(miasto);
+            for(int i=0;i<rozGraf-1;i++){ //petla do znalezienia sciezki startujacej od kazdego wierzcholka k
 
                 //tworzenie dostepnych wierzcholkow i edytowanie tablicy
                 //na biezaco obliczanie mianownika do prawdopodobienstwa
                 //przeliczanie prawdopdoobienstwa i tworzenie sciezki
 
-                double licznik;
-                int liczbaMiast = 0;
                 mianownik = 0.0;
-                bool odwiedzone[rozGraf];
-                for(int initOd=0;initOd<rozGraf;initOd++) odwiedzone[initOd] = false;
-                odwiedzone[i] = true;
 
+                int liczbaMiast = 0;
 
-                for(int wierz=0;wierz<rozGraf-1;wierz++){
-                    for(int ite=0;ite<rozGraf;ite++){
-                        if(!odwiedzone[ite]) mianownik += (pow(feromony[i][ite],alpha) * pow(desire[i][ite],beta));
+                for(int ite=0;ite<rozGraf;ite++){
+                    if(!odwiedzone[ite]) {
+                        mianownik += (pow(feromony[miasto][ite],alpha) * pow(desire[miasto][ite],beta));
+                        liczbaMiast++;
                     }
+                }
 
-                    prawdopodobienstwo = new double [rozGraf];
+                int pamietaj_miasto[liczbaMiast];
+                int buff = 0;
+                prawdopodobienstwo = new double [rozGraf];
+
                     for(int ite=0;ite<rozGraf;ite++){
                         if(!odwiedzone[ite]){
-                            licznik = (pow(feromony[i][ite],alpha) * pow(desire[i][ite],beta));
+                            licznik = (pow(feromony[miasto][ite],alpha) * pow(desire[miasto][ite],beta));
                             prawdopodobienstwo[ite] = licznik/mianownik;
-                            liczbaMiast++;
+                            pamietaj_miasto[buff++] = ite;
                         }else prawdopodobienstwo[ite] = -1.0;
                     }
                     aktualneMiasta = new double [liczbaMiast];
                     double rng = los(gen);
 
+                    int save = 0;
+                    for(int ite=0;ite<rozGraf;ite++){
+                        if(prawdopodobienstwo[ite]!=-1.0){
+                            aktualneMiasta[save] = prawdopodobienstwo[ite];
+                            save++;
+                        }
+                    }
 
+                    ruletka(liczbaMiast,aktualneMiasta);
 
+                    for(int ite=0;ite<liczbaMiast;ite++){
+                        if(rng < aktualneMiasta[ite]){ //bug, nie zawsze wchodzi, byc moze partial_sum sie zle wykonuje
+                            path.dodajNaKoniec(pamietaj_miasto[ite]);
+                            odwiedzone[pamietaj_miasto[ite]] = true;
+                            //trzeba zweryfikowac ktory to wierzcholek i dodac go do aktualnej sciezki
+                            //odwiedzone[wybrany_wierzcholek] = true
+                            // i lecim dalej wybierac
+                            miasto = pamietaj_miasto[ite];
+                            break;
+                        }
+                    }
+
+                    delete [] aktualneMiasta;
                     delete [] prawdopodobienstwo;
-                }
 
             }
 
+            // tu liczymy koszt znalezionej sciezki
+            // dodajemy feromony na sciezke dodaj_feromony[i][j], gdzoe i,j okreslaja wierzcholek na sciezce
+            //if(path.rozmiar!=rozGraf) continue;
+            int koszt = obliczKoszt(path);
 
-            for(int i=0;i<rozGraf;i++){
-                for(int j=0;j<rozGraf;j++){
-                    feromony[i][j] = (feromony[i][j] * evaporation) + dodaj_feromony[i][j];
-                    dodaj_feromony[i][j] = 0.0;
-                }
+            if(koszt < najWynik){
+                najWynik = koszt;
+                for(int r=0;r<rozGraf;r++) sciezka[r] = path.table[r];
             }
 
+            for(int r=0;r<rozGraf-1;r++){
+                dodaj_feromony[path.table[r]][path.table[r+1]] += feromon/ (double) koszt;
+                if(r==rozGraf-2){
+                    dodaj_feromony[path.table[r+1]][path.table[0]] += feromon/ (double) koszt;
+                }
+            }
+            for(int r=0;r>rozGraf;r++) path.usunZKonca();
         }
 
+        for(int i=0;i<rozGraf;i++){
+            for(int j=0;j<rozGraf;j++){
+                feromony[i][j] = (feromony[i][j] * evaporation) + dodaj_feromony[i][j];
+                dodaj_feromony[i][j] = 0.0;
+            }
+        }
 
         aktualnaOdleglosc = najWynik;
         if(aktualnaOdleglosc==staraOdleglosc){
@@ -186,27 +253,28 @@ void ACO::simulation() {
         staraOdleglosc = aktualnaOdleglosc;
     }
     wynik = najWynik;
+    for(int i=0;i<rozGraf;i++) sciezkaFinal[i] = sciezka[i];
 }
 
-int ACO::obliczKoszt(int *&sciezka) {
+int ACO::obliczKoszt(tablicaI sciezka) {
     int res = 0;
     for(int i=0;i<rozGraf-1;i++){
-        res += graf.grafMacierz[sciezka[i]][sciezka[i+1]];
+        res += graf.grafMacierz[sciezka.table[i]][sciezka.table[i+1]];
     }
-    res += graf.grafMacierz[sciezka[rozGraf-1]][sciezka[0]];
+    res += graf.grafMacierz[sciezka.table[rozGraf-1]][sciezka.table[0]];
     return res;
 }
 
-void ACO::nowaSciezka(int *&sciezka) {
+void ACO::nowaSciezka(tablicaI sciezka) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, rozGraf-1);
     int indeks1 = distrib(gen);
     int indeks2 = distrib(gen);
     while(indeks1==indeks2) indeks2 = distrib(gen);
-    int temp = sciezka[indeks1];
-    sciezka[indeks1] = sciezka[indeks2];
-    sciezka[indeks2] = temp;
+    int temp = sciezka.table[indeks1];
+    sciezka.table[indeks1] = sciezka.table[indeks2];
+    sciezka.table[indeks2] = temp;
 }
 
 double ACO::propability_cal(){ //TO-DO:obliczanie prawdopodobienstwa przejscia do miasta
@@ -242,13 +310,8 @@ void ACO::greedy(int start, int *&sciezka){
     for(int n=0;n<rozGraf;n++) sciezka[n] = tempTab[n];
 }
 
-void ACO::ruletka(double *&prawdopodobienstwo, int n, double *&aktualneMiasta){
-    int j=0;
-    for(int i=0;i<rozGraf;i++){
-        if(prawdopodobienstwo[i]!=-1.0){
-            aktualneMiasta[j] = prawdopodobienstwo[i];
-            j++;
-            for(int k=0;k<j;k++) aktualneMiasta[j-1]+=aktualneMiasta[k];
-        }
+void ACO::ruletka( int n, double *&aktualneMiasta){
+    for(int i=0;i<n-1;i++){
+        aktualneMiasta[i+1] += aktualneMiasta[i];
     }
 }

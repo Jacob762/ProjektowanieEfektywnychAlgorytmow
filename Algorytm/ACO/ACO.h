@@ -26,8 +26,11 @@ class ACO {
     void nowaSciezka(int *&sciezka);
     double cal_start();
     double propability_cal();
-    double ruletka(double *&prawdopodobienstwo,int n);
+
     void greedy(int start, int *&sciezka);
+    void ruletka(int n, double *&aktualneMiasta);
+    int obliczKoszt(tablicaI sciezka);
+    void nowaSciezka(tablicaI sciezka);
 public:
 
 
@@ -41,7 +44,10 @@ public:
     ACO(int size);
 
 
-    void ruletka(double *&prawdopodobienstwo, int n, double *&aktualneMiasta);
+
+
+    void simulation(double alphaIN, double betaIN, double evaporationIN, double feromonIN);
+
 };
 
 

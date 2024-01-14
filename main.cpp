@@ -4,6 +4,7 @@
 #include "Algorytm/BruteForce/BruteForce.h"
 #include "Algorytm/SA/SimulatedAnnealing.h"
 #include "Algorytm/SA/SATesty.h"
+#include "Algorytm/ACO/ACO.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ void menu();
 int main() {
 
     double wspolcz = 0.9999;
-    string naz = "br17.atsp";
+    string naz = "ry48p.atsp";
     int exit;
 
     string nazwy[19] = {"br17.atsp","ftv33.atsp","ftv35.atsp",
@@ -30,7 +31,21 @@ int main() {
                     1326,1163,2465,2720};
 
 
-    menu();
+    ACO aco = ACO(naz);
+    cout<<aco.getWynik()<<endl;
+    aco.getTrasa();
+
+    cout<<endl;
+
+    //SimulatedAnnealing sa = SimulatedAnnealing(naz,1,0.999,0.001);
+    //cout<<sa.getWynik()<<endl;
+    //sa.getTrasa();
+
+   // DP dp = DP(naz,1);
+    //cout<<dp.getWynik()<<endl;
+   // dp.getTrasa();
+
+    //menu();
     return 23;
 
 }
