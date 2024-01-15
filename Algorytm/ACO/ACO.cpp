@@ -10,7 +10,7 @@
 
 #include <random>
 
-ACO::ACO(string nazwa) {
+ACO::ACO(string nazwa, double alpha, double beta, double evaporation, double pheromone) {
     graf = Graf(nazwa);
 
     wynik = INT_MAX;
@@ -26,7 +26,7 @@ ACO::ACO(string nazwa) {
     }
 
     greedy(0,sciezkaFinal);
-    simulation(3.6,14.0,0.5,100.0);
+    simulation(alpha,beta,evaporation,pheromone);
 
 
 }
@@ -85,7 +85,7 @@ double ACO::getTO() {
     return 80.0;
 }
 
-void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double feromonIN) { ///todo przebudowanie kodu pod latwiejsze dostosowywanie paramtrow, zabawa paramterami, sprobowac uzyc greedy do poczatkowej trasy?
+void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double feromonIN) {
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<double> los(0.0, 1.0);
@@ -124,10 +124,12 @@ void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double
         }
     }
 
+
 //    int *greed = new int [rozGraf];
 //    for(int i=0;i<rozGraf;i++) greed[i] = i;
 //    greedy(0,greed);
 //    tablicaI tab = tablicaI();
+//    cout<<"GREEDY"<<endl;
 //    for(int i=0;i<rozGraf;i++) {
 //        tab.dodajNaKoniec(greed[i]);
 //        cout<<greed[i]<<" ";
@@ -135,15 +137,16 @@ void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double
 //    cout<<obliczKoszt(tab)<<endl;
 
 //    for(int i=0;i<rozGraf-1;i++){
-//        feromony[greed[i]][greed[i+1]] += 0.1;
-//        desire[greed[i]][greed[i+1]] = (feromony[greed[i]][greed[i+1]]*1000) * (1/(double)graf.grafMacierz[greed[i]][greed[i+1]]);
+//        feromony[greed[i]][greed[i+1]] += 0.050;
+//        if(graf.grafMacierz[greed[i]][greed[i+1]]!=0){
+//            desire[greed[i]][greed[i+1]] = (feromony[greed[i]][greed[i+1]]*1000) * (1/(double)graf.grafMacierz[greed[i]][greed[i+1]]);
+//        } else desire[greed[i]][greed[i+1]] = 0;
 //    }
-//    feromony[greed[rozGraf-1]][greed[0]] += 0.1;
+//    feromony[greed[rozGraf-1]][greed[0]] += 0.050;
 //    desire[greed[rozGraf-1]][greed[0]] = (feromony[greed[rozGraf-1]][greed[0]]*1000) * (1/(double)graf.grafMacierz[greed[rozGraf-1]][greed[0]]);
- //   greedy(0,sciezka);
-//    cout<<obliczKoszt(sciezka)<<" GREEDY"<<endl;
-  //  for(int i=0;i<rozGraf;i++) cout<<sciezka[i]+1<<" ";
- //   cout<<sciezka[0]+1<<endl;
+//    if(graf.grafMacierz[rozGraf-1][greed[0]]!=0){
+//        desire[rozGraf-1][greed[0]] = (feromony[rozGraf-1][greed[0]]*1000) * (1/(double)graf.grafMacierz[rozGraf-1][greed[0]]);
+//    } else desire[rozGraf-1][greed[0]] = 0;
 
     //int najWynik = wynik;
     int najWynik = INT_MAX;
@@ -160,6 +163,7 @@ void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double
             bool odwiedzone[rozGraf];
             for(int initOd=0;initOd<rozGraf;initOd++) odwiedzone[initOd] = false;
             int miasto = k;
+            int buffmiasto = k;
             odwiedzone[k] = true;
             path.dodajNaKoniec(miasto);
             for(int i=0;i<rozGraf-1;i++){ //petla do znalezienia sciezki startujacej od kazdego wierzcholka k
@@ -178,6 +182,8 @@ void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double
                         liczbaMiast++;
                     }
                 }
+
+                if(mianownik==0.0) mianownik =2.0;
 
                 int pamietaj_miasto[liczbaMiast];
                 int buff = 0;
@@ -202,7 +208,9 @@ void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double
                     }
 
                     ruletka(liczbaMiast,aktualneMiasta);
-
+                    buffmiasto = miasto;
+//                    for(int ite=0;ite<liczbaMiast;ite++) cout<<aktualneMiasta[ite]<<" ";
+//                    cout<<endl;
                     for(int ite=0;ite<liczbaMiast;ite++){
                         if(rng < aktualneMiasta[ite]){ //bug, nie zawsze wchodzi, byc moze partial_sum sie zle wykonuje
                             path.dodajNaKoniec(pamietaj_miasto[ite]);
@@ -213,6 +221,11 @@ void ACO::simulation(double alphaIN, double betaIN, double evaporationIN, double
                             miasto = pamietaj_miasto[ite];
                             break;
                         }
+                    }
+                    if(buffmiasto==miasto){
+                        path.dodajNaKoniec(pamietaj_miasto[liczbaMiast-1]);
+                        odwiedzone[pamietaj_miasto[liczbaMiast-1]] = true;
+                        miasto = pamietaj_miasto[liczbaMiast-1];
                     }
 
                     delete [] aktualneMiasta;

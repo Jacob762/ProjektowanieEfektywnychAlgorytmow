@@ -5,6 +5,7 @@
 #include "Algorytm/SA/SimulatedAnnealing.h"
 #include "Algorytm/SA/SATesty.h"
 #include "Algorytm/ACO/ACO.h"
+#include "Algorytm/ACO/ACOTesty.h"
 
 using namespace std;
 
@@ -13,8 +14,11 @@ void menu();
 
 int main() {
 
-    double wspolcz = 0.9999;
-    string naz = "ry48p.atsp";
+    double alpha = 5.3;
+    double beta = 14.0;
+    double evap = 0.5;
+    double ph = 150.0;
+    string naz = "kro124p.atsp";
     int exit;
 
     string nazwy[19] = {"br17.atsp","ftv33.atsp","ftv35.atsp",
@@ -31,37 +35,34 @@ int main() {
                     1326,1163,2465,2720};
 
 
-    ACO aco = ACO(naz);
-    cout<<aco.getWynik()<<endl;
-    aco.getTrasa();
 
-    cout<<endl;
 
-    //SimulatedAnnealing sa = SimulatedAnnealing(naz,1,0.999,0.001);
-    //cout<<sa.getWynik()<<endl;
-    //sa.getTrasa();
-
-   // DP dp = DP(naz,1);
-    //cout<<dp.getWynik()<<endl;
-   // dp.getTrasa();
-
-    //menu();
+    menu();
     return 23;
 
 }
 
 void menu(){
     int wybor;
-    double wspolcz;
+    double alpha;
+    double beta;
+    double ev;
+    double ph;
     string nazwa;
     for(;;){
         cout<<"Podaj nazwe pliku"<<endl;
         cin>>nazwa;
-        cout<<"Podaj wspolczynnik chlodzenia"<<endl;
-        cin>>wspolcz;
-        SimulatedAnnealing sa = SimulatedAnnealing(nazwa,0,wspolcz,0.001);
-        cout<<sa.getWynik()<<endl;
-        sa.getTrasa();
+        cout<<"Podaj alfa"<<endl;
+        cin>>alpha;
+        cout<<"Podaj beta"<<endl;
+        cin>>beta;
+        cout<<"Podaj evaporation_rate"<<endl;
+        cin>>ev;
+        cout<<"Podaj feromoy"<<endl;
+        cin>>ph;
+        ACO aco = ACO(nazwa,alpha,beta,ev,ph);
+        cout<<aco.getWynik()<<endl;
+        aco.getTrasa();
         cout<<"Czy kontynuowac?"<<endl;
         cin>>wybor;
         if(wybor==0) return;

@@ -12,6 +12,7 @@
 class ACO {
 
 
+
     int wynik;
     Graf graf;
 
@@ -20,10 +21,7 @@ class ACO {
 
     int rozGraf;
 
-    double tempStart();
 
-    int obliczKoszt(int *&sciezka);
-    void nowaSciezka(int *&sciezka);
     double cal_start();
     double propability_cal();
 
@@ -40,13 +38,9 @@ public:
     double getTO();
     void simulation();
 
-    ACO(string nazwa);
     ACO(int size);
-
-
-
-
     void simulation(double alphaIN, double betaIN, double evaporationIN, double feromonIN);
+    ACO(string nazwa, double alpha, double beta, double evaporation, double pheromone);
 
 };
 
