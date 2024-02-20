@@ -16,9 +16,9 @@ int main() {
 
     double alpha = 5.3;
     double beta = 14.0;
-    double evap = 0.5;
-    double ph = 150.0;
-    string naz = "kro124p.atsp";
+    double evap = 0.1;
+    double ph = 100.0;
+    string naz = "ftv70.atsp";
     int exit;
 
     string nazwy[19] = {"br17.atsp","ftv33.atsp","ftv35.atsp",
@@ -35,9 +35,17 @@ int main() {
                     1326,1163,2465,2720};
 
 
+    SimulatedAnnealing sa = SimulatedAnnealing(naz,1,0.9999,0.001);
+    sa.getTrasa();
+    cout<<sa.getWynik()<<endl;
 
 
-    menu();
+    ACO aco = ACO(naz,alpha,beta,evap,ph);
+    aco.getTrasa();
+    cout<<aco.getWynik()<<endl;
+
+
+    //menu();
     return 23;
 
 }

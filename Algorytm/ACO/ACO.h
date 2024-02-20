@@ -36,7 +36,6 @@ public:
     void getTrasa();
     int getSize();
     double getTO();
-    void simulation();
 
     ACO(int size);
     void simulation(double alphaIN, double betaIN, double evaporationIN, double feromonIN);
